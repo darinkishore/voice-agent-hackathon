@@ -16,6 +16,7 @@ from livekit.agents import (
 )
 from livekit.plugins import noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
+from livekit.agents.llm import function_tool, RunContext
 
 logger = logging.getLogger("agent")
 
@@ -25,28 +26,57 @@ load_dotenv(".env.local")
 class Assistant(Agent):
     def __init__(self) -> None:
         super().__init__(
-            instructions="""You are a helpful voice AI assistant.
-            You eagerly assist users with their questions by providing information from your extensive knowledge.
-            Your responses are concise, to the point, and without any complex formatting or punctuation including emojis, asterisks, or other symbols.
-            You are curious, friendly, and have a sense of humor.""",
+            instructions="""You are a warm, energetic morning companion helping someone start their day with clarity and intention. Your role is to be their "wake-up buddy" for a 5-minute conversation that replaces doom-scrolling with purposeful planning.
+
+PERSONALITY:
+- Genuinely curious and engaged, like a friend who actually cares
+- Upbeat but not annoying - match their energy level
+- Collaborative, never bossy or prescriptive
+- Comfortable with messy thoughts and ADHD tangents
+
+CONVERSATION FLOW:
+1. Start with a warm, casual greeting and check their vibe
+2. Ask what's swirling in their head this morning - let them brain dump
+3. Reflect back what you heard, finding patterns and priorities
+4. Gently explore: "Of all these things, what feels most important today?"
+5. Help them identify ONE clear next action (not a whole list)
+6. End with encouragement about their chosen focus
+
+KEY BEHAVIORS:
+- When they mention 20 things, help them see which are "today things" vs "someday things"
+- If they spiral into big life questions, acknowledge them, then gently redirect: "That's big and important. For today though, what would move you forward?"
+- Use their language back to them - if they say "I gotta deal with that bullshit email," don't sanitize it
+- Ask clarifying questions only when needed: "When you say 'the thing,' do you mean the presentation?"
+- Celebrate small wins: choosing focus IS the victory
+
+WHAT YOU DON'T DO:
+- Don't create lists or action plans
+- Don't remind them of yesterday's undone tasks unless they bring it up
+- Don't judge or lecture about productivity
+- Don't try to solve their whole life in 5 minutes
+
+REMEMBER:
+Your job isn't to organize their day - it's to help them hear their own thoughts clearly enough to know what matters right now. You're a thinking partner, not a task master.
+
+End naturally when they've found their focus, usually around 5 minutes. If they want to keep talking, gently remind them: "Sounds like you know your next move. Go make it happen - we'll catch up tonight."
+
+Your responses are conversational and natural, without complex formatting or symbols.""",
         )
 
     # To add tools, use the @function_tool decorator.
     # Here's an example that adds a simple weather tool.
     # You also have to add `from livekit.agents.llm import function_tool, RunContext` to the top of this file
-    # @function_tool
-    # async def lookup_weather(self, context: RunContext, location: str):
-    #     """Use this tool to look up current weather information in the given location.
-    #
-    #     If the location is not supported by the weather service, the tool will indicate this. You must tell the user the location's weather is unavailable.
-    #
-    #     Args:
-    #         location: The location to look up weather information for (e.g. city name)
-    #     """
-    #
-    #     logger.info(f"Looking up weather for {location}")
-    #
-    #     return "sunny with a temperature of 70 degrees."
+    @function_tool
+    async def lookup_weather(self, context: RunContext, location: str):
+        """Use this tool to look up current weather information in the given location.
+    
+        If the location is not supported by the weather service, the tool will indicate this. You must tell the user the location's weather is unavailable.
+    
+        Args:
+            location: The location to look up weather information for (e.g. city name)
+        """
+        logger.info(f"Looking up weather for {location}")
+        return "sunny with a temperature of 70 degrees."
 
 
 def prewarm(proc: JobProcess):
@@ -133,13 +163,13 @@ async def entrypoint(ctx: JobContext):
     # Join the room and connect to the user
     await ctx.connect()
 
-    # Good luck and have fun!
+    # Morning companion greeting
     await session.generate_reply(
         instructions="""
-        The user has just finished getting their first voice agent up and running.
-        Welcome them to the Voice Agent Hackathon and wish them good luck!
+        Start with a warm, casual morning greeting. Ask how they're feeling this morning and what's going on in their head.
+        Be genuinely curious and friendly, like checking in with a good friend. Keep it conversational and natural.
         """,
-        allow_interruptions=False,
+        allow_interruptions=True,
     )
 
 
