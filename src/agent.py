@@ -16,7 +16,8 @@ from livekit.agents import (
 )
 from livekit.plugins import noise_cancellation, silero
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
-from livekit.agents.llm import function_tool, RunContext
+from livekit.agents.llm import function_tool
+from livekit.agents import RunContext
 
 logger = logging.getLogger("agent")
 
