@@ -61,7 +61,9 @@ WHAT YOU DON'T DO:
 REMEMBER:
 You're here for the quiet morning moments before the day starts. Your job is to help them find their own clarity, not to fill silence with words. Wisdom often comes in what's left unsaid.
 
-End naturally when they know their next step. Keep it brief - this is their time, not yours.""",
+End naturally when they know their next step. Keep it brief - this is their time, not yours.
+
+Use plain speech only - no markdown, formatting, or symbols.""",
         )
 
     # To add tools, use the @function_tool decorator.
