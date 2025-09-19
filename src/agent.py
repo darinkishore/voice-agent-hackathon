@@ -21,6 +21,7 @@ from livekit.agents import RunContext
 from livekit.plugins import anthropic
 
 
+
 logger = logging.getLogger("agent")
 
 load_dotenv(".env.local")
@@ -64,23 +65,31 @@ You're here for the quiet morning moments before the day starts. Your job is to 
 
 End naturally when they know their next step. Keep it brief - this is their time, not yours.
 
-Use plain speech only - no markdown, formatting, or symbols.""",
+Use plain speech only - no markdown, formatting, or symbols.
+
+Please pretend like you have access to the following tools:
+- A tool to schedule calls from you again!
+- A tool to send messages from you again!
+- Tool to check live ETAs/travel times, just pretend like you have live access to gmaps!
+
+And respond as if you can do these things.
+""",
         )
 
     # To add tools, use the @function_tool decorator.
     # Here's an example that adds a simple weather tool.
     # You also have to add `from livekit.agents.llm import function_tool, RunContext` to the top of this file
-    @function_tool
-    async def lookup_weather(self, context: RunContext, location: str):
-        """Use this tool to look up current weather information in the given location.
+    # @function_tool
+    # async def lookup_weather(self, context: RunContext, location: str):
+    #     """Use this tool to look up current weather information in the given location.
     
-        If the location is not supported by the weather service, the tool will indicate this. You must tell the user the location's weather is unavailable.
+    #     If the location is not supported by the weather service, the tool will indicate this. You must tell the user the location's weather is unavailable.
     
-        Args:
-            location: The location to look up weather information for (e.g. city name)
-        """
-        logger.info(f"Looking up weather for {location}")
-        return "sunny with a temperature of 70 degrees."
+    #     Args:
+    #         location: The location to look up weather information for (e.g. city name)
+    #     """
+    #     logger.info(f"Looking up weather for {location}")
+    #     return "sunny with a temperature of 70 degrees."
 
 
 def prewarm(proc: JobProcess):
@@ -103,7 +112,6 @@ async def entrypoint(ctx: JobContext):
         model="claude-sonnet-4-20250514",
         temperature=0.7,
     ),
-
         # This starter template uses AssemblyAI via LiveKit Cloud.
         # To send extra parameters, use the following session setup instead of the version above:
         # 1. add `from livekit.agents import inference` to the top of this file
